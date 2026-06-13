@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hokkien Dictionary</title>
 
+<button onclick="openExport()">Export</button>
+<button onclick="openImport()">Import</button>
+    
 <style>
 body{
     font-family: Arial, sans-serif;
@@ -113,6 +116,22 @@ button{
 
 <div id="wordList"></div>
 
+<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+background:rgba(0,0,0,0.5);">
+
+  <div style="background:white; width:80%; max-width:600px; margin:100px auto; padding:15px; position:relative;">
+
+    <button onclick="closeModal()" style="position:absolute; right:10px; top:10px;">X</button>
+
+    <h3 id="modalTitle"></h3>
+
+    <textarea id="modalText" style="width:100%; height:300px;" readonly></textarea>
+
+    <button id="modalAction" style="margin-top:10px;"></button>
+
+  </div>
+</div>
+    
 <script>
 
 let editingId = null;
@@ -305,6 +324,74 @@ function editWord(id){
     // UI changes
     document.getElementById("formTitle").innerText = "Editing";
     document.getElementById("submitBtn").innerText = "Change Word";
+}
+
+function exportData(){
+
+    return JSON.stringify(
+        dictionary.map(d => ({
+            w: d.word,
+            p: d.pronunciation
+        }))
+    );
+}
+
+function importData(data){
+
+    try {
+        const parsed = JSON.parse(data);
+
+        dictionary = parsed.map(d => ({
+            id: Date.now() + Math.random(),
+            word: d.w,
+            pronunciation: d.p
+        }));
+
+        saveDictionary();
+        renderWords();
+
+        alert("Import successful");
+
+    } catch (e) {
+        alert("Invalid import data");
+    }
+}
+
+function openExport(){
+
+    document.getElementById("modal").style.display = "block";
+    document.getElementById("modalTitle").innerText = "Export Data";
+
+    document.getElementById("modalText").value = exportData();
+
+    document.getElementById("modalAction").innerText = "Close";
+    document.getElementById("modalAction").onclick = closeModal;
+}
+
+function openImport(){
+
+    document.getElementById("modal").style.display = "block";
+    document.getElementById("modalTitle").innerText = "Import Data";
+
+    document.getElementById("modalText").value = "";
+    document.getElementById("modalText").placeholder =
+        "Paste exported data here...";
+
+    document.getElementById("modalText").readOnly = false;
+
+    document.getElementById("modalAction").innerText = "Import";
+    document.getElementById("modalAction").onclick = function(){
+
+        importData(document.getElementById("modalText").value);
+
+        closeModal();
+    };
+}
+
+function closeModal(){
+
+    document.getElementById("modal").style.display = "none";
+    document.getElementById("modalText").readOnly = true;
 }
     
 renderWords();
