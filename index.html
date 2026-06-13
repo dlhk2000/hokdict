@@ -169,9 +169,10 @@ function addWord(){
         alert("Enter both word and pronunciation");
         return;
     }
-
-    pronunciation = convertTone(pronunciation);
+	
     pronunciation = autoSpacePinyin(pronunciation);
+    pronunciation = convertTone(pronunciation);
+    
     
     if(editingId !== null){
 
