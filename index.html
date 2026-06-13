@@ -71,6 +71,8 @@ button{
 
 <script>
 
+let editingId = null;
+    
 let dictionary =
 JSON.parse(localStorage.getItem("dictionary") || "[]");
 
@@ -99,11 +101,24 @@ function addWord(){
     pronunciation = convertTone(pronunciation);
     pronunciation = autoSpacePinyin(pronunciation);
     
-    dictionary.push({
-        id: Date.now(),
-        word,
-        pronunciation
-    });
+    if(editingId !== null){
+
+        // UPDATE existing entry
+        const item = dictionary.find(d => d.id === editingId);
+        item.word = word;
+        item.pronunciation = pronunciation;
+
+        editingId = null;
+
+    } else {
+
+        // ADD new entry
+        dictionary.push({
+            id: Date.now(),
+            word,
+            pronunciation
+        });
+    }
 
     saveDictionary();
 
@@ -150,21 +165,17 @@ function renderWords(){
         div.className = "word-card";
 
         div.innerHTML = `
-            <button
-            class="delete-btn"
-            onclick="deleteWord(${item.id})">
-            Delete
-            </button>
-
+            <button onclick="editWord(${item.id})">Edit</button>
+            <button onclick="deleteWord(${item.id})">Delete</button>
+        
             <div class="word-title">
                 ${item.word}
             </div>
-
+        
             <div>
                 ${item.pronunciation}
             </div>
         `;
-
         container.appendChild(div);
     });
 }
@@ -231,6 +242,15 @@ function autoSpacePinyin(input) {
         .trim();
 }
 
+function editWord(id){
+
+    const item = dictionary.find(d => d.id === id);
+
+    document.getElementById("wordInput").value = item.word;
+    document.getElementById("pronunciationInput").value = item.pronunciation;
+
+    editingId = id;
+}
     
 renderWords();
 
