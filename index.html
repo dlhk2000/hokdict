@@ -191,22 +191,26 @@ function addWord(){
     pronunciation = processPinyin(pronunciation);
     
     
-    if(editingId !== null){
+    const raw = document.getElementById("pronunciationInput").value.trim();
 
-        // UPDATE existing entry
+    const display = processPinyin(raw);
+    
+    if (editingId !== null) {
+    
         const item = dictionary.find(d => d.id === editingId);
         item.word = word;
-        item.pronunciation = pronunciation;
-
+        item.raw = raw;
+        item.display = display;
+    
         editingId = null;
-
+    
     } else {
-
-        // ADD new entry
+    
         dictionary.push({
             id: Date.now(),
             word,
-            pronunciation
+            raw,
+            display
         });
     }
 
@@ -264,7 +268,7 @@ function renderWords(){
                 </div>
         
                 <div>
-                    ${item.pronunciation}
+                    ${item.display}
                 </div>
             </div>
         
@@ -331,7 +335,7 @@ function editWord(id){
     const item = dictionary.find(d => d.id === id);
 
     document.getElementById("wordInput").value = item.word;
-    document.getElementById("pronunciationInput").value = item.pronunciation;
+    document.getElementById("pronunciationInput").value = item.raw;
 
     editingId = id;
 
@@ -340,14 +344,13 @@ function editWord(id){
     document.getElementById("submitBtn").innerText = "Change Word";
 }
 
-function exportData(){
-
-    return JSON.stringify(
-        dictionary.map(d => ({
-            w: d.word,
-            p: d.pronunciation
-        }))
-    );
+function exportData() {
+    
+    return JSON.stringify(dictionary.map(d => ({
+        w: d.word,
+        r: d.raw,
+        d: d.display
+    })));
 }
 
 function importData(data){
@@ -358,7 +361,8 @@ function importData(data){
         dictionary = parsed.map(d => ({
             id: Date.now() + Math.random(),
             word: d.w,
-            pronunciation: d.p
+            raw: d.r,
+            display: d.d
         }));
 
         saveDictionary();
@@ -483,6 +487,11 @@ async function loadVersion() {
         document.getElementById("versionDisplay").innerText = fallback;
     }
 }
+
+document.getElementById("pronunciationInput").addEventListener("input", function () {
+    const raw = this.value.trim();
+    document.getElementById("preview").innerText = processPinyin(raw);
+});
 
 loadVersion();
 
