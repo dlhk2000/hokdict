@@ -53,9 +53,9 @@ button{
 <input id="wordInput" placeholder="Word">
 
 <textarea
-    id="meaningInput"
+    id="pronounciationInput"
     rows="4"
-    placeholder="Meaning">
+    placeholder="Pronounciation">
 </textarea>
 
 <button onclick="addWord()">Add Word</button>
@@ -87,25 +87,25 @@ function addWord(){
     document.getElementById("wordInput")
     .value.trim();
 
-    const meaning =
-    document.getElementById("meaningInput")
+    const pronounciation =
+    document.getElementById("pronounciationInput")
     .value.trim();
 
-    if(!word || !meaning){
-        alert("Enter both word and meaning");
+    if(!word || !pronounciation){
+        alert("Enter both word and pronounciation");
         return;
     }
 
     dictionary.push({
         id: Date.now(),
         word,
-        meaning
+        pronounciation
     });
 
     saveDictionary();
 
     document.getElementById("wordInput").value="";
-    document.getElementById("meaningInput").value="";
+    document.getElementById("pronounciationInput").value="";
 
     renderWords();
 }
@@ -158,7 +158,7 @@ function renderWords(){
             </div>
 
             <div>
-                ${item.meaning}
+                ${item.pronounciation}
             </div>
         `;
 
