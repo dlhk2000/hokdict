@@ -92,7 +92,7 @@ button{
 
 <h1>Hokkien Dictionary</h1>
 
-<h3>Add Entry</h3>
+<h3 id="formTitle">Add Entry</h3>
 
 <input id="wordInput" placeholder="Word">
 
@@ -102,7 +102,7 @@ button{
     placeholder="Pronunciation">
 </input>
 
-<button onclick="addWord()">Add Word</button>
+<button id="submitBtn" onclick="addWord()">Add Word</button>
 
 <hr>
 
@@ -168,6 +168,9 @@ function addWord(){
 
     document.getElementById("wordInput").value="";
     document.getElementById("pronunciationInput").value="";
+
+    document.getElementById("formTitle").innerText = "Add Entry";
+    document.getElementById("submitBtn").innerText = "Add Word";
 
     renderWords();
 }
@@ -298,6 +301,10 @@ function editWord(id){
     document.getElementById("pronunciationInput").value = item.pronunciation;
 
     editingId = id;
+
+    // UI changes
+    document.getElementById("formTitle").innerText = "Editing";
+    document.getElementById("submitBtn").innerText = "Change Word";
 }
     
 renderWords();
