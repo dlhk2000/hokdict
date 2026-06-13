@@ -94,6 +94,18 @@ button{
         opacity: 1;
     }
 }
+
+#versionDisplay {
+    position: fixed;
+    bottom: 5px;
+    right: 8px;
+
+    font-size: 11px;
+    color: #aaa;
+
+    opacity: 0.6;
+    pointer-events: none;
+}
 </style>
 </head>
 
@@ -139,7 +151,10 @@ background:rgba(0,0,0,0.5);">
 <div class="bottom-bar">
     <button onclick="openExport()">Export</button>
     <button onclick="openImport()">Import</button>
+    
+    <div id="versionDisplay"></div>
 </div>
+
   
 <script>
 
@@ -436,6 +451,39 @@ function processPinyin(input) {
 
     return syllables.map(convertTone).join(" ");
 }
+
+async function loadVersion() {
+
+    const fallback = "v1 • —";
+
+    try {
+        const res = await fetch("version.json");
+
+        if (!res.ok) {
+            document.getElementById("versionDisplay").innerText = fallback;
+            return;
+        }
+
+        const data = await res.json();
+
+        const commit = data?.commit;
+
+        if (!commit || typeof commit !== "string") {
+            document.getElementById("versionDisplay").innerText = fallback;
+            return;
+        }
+
+        document.getElementById("versionDisplay").innerText =
+            "v1 • " + commit;
+
+    } catch (e) {
+        document.getElementById("versionDisplay").innerText = fallback;
+    }
+}
+
+loadVersion();
+
+loadVersion();
 
 renderWords();
 
