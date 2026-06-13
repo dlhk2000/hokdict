@@ -53,9 +53,9 @@ button{
 <input id="wordInput" placeholder="Word">
 
 <textarea
-    id="pronounciationInput"
+    id="pronunciationInput"
     rows="4"
-    placeholder="Pronounciation">
+    placeholder="Pronunciation">
 </textarea>
 
 <button onclick="addWord()">Add Word</button>
@@ -87,25 +87,25 @@ function addWord(){
     document.getElementById("wordInput")
     .value.trim();
 
-    const pronounciation =
-    document.getElementById("pronounciationInput")
+    const pronunciation =
+    document.getElementById("pronunciationInput")
     .value.trim();
 
-    if(!word || !pronounciation){
-        alert("Enter both word and pronounciation");
+    if(!word || !pronunciation){
+        alert("Enter both word and pronunciation");
         return;
     }
 
     dictionary.push({
         id: Date.now(),
         word,
-        pronounciation
+        pronunciation: convertTone(pronunciation)
     });
 
     saveDictionary();
 
     document.getElementById("wordInput").value="";
-    document.getElementById("pronounciationInput").value="";
+    document.getElementById("pronunciationInput").value="";
 
     renderWords();
 }
@@ -158,7 +158,7 @@ function renderWords(){
             </div>
 
             <div>
-                ${item.pronounciation}
+                ${item.pronunciation}
             </div>
         `;
 
@@ -166,6 +166,56 @@ function renderWords(){
     });
 }
 
+function convertTone(input) {
+
+    const toneMap = {
+        a: ["a", "ā", "á", "ǎ", "à"],
+        o: ["o", "ō", "ó", "ǒ", "ò"],
+        e: ["e", "ē", "é", "ě", "è"],
+        i: ["i", "ī", "í", "ǐ", "ì"],
+        u: ["u", "ū", "ú", "ǔ", "ù"]
+        // ü intentionally NOT included
+    };
+
+    const match = input.match(/([1-4])$/);
+    let tone = match ? parseInt(match[1]) : 0;
+
+    let syllable = input
+        .replace(/v/g, "ü")
+        .replace(/[1-4]$/, "");
+
+    const priority = ["a", "o", "e", "i", "u"]; // standard rule order
+
+    let targetIndex = -1;
+    let targetVowel = null;
+
+    for (let v of priority) {
+        let index = syllable.indexOf(v);
+        if (index !== -1) {
+            targetIndex = index;
+            targetVowel = v;
+            break;
+        }
+    }
+
+    // fallback: if no main vowel found
+    if (targetIndex === -1) {
+        return syllable;
+    }
+
+    // apply tone
+    const tonedChar =
+        tone > 0 && toneMap[targetVowel]
+            ? toneMap[targetVowel][tone]
+            : targetVowel;
+
+    return (
+        syllable.slice(0, targetIndex) +
+        tonedChar +
+        syllable.slice(targetIndex + 1)
+    );
+}
+    
 renderWords();
 
 </script>
