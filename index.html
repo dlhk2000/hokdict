@@ -170,8 +170,7 @@ function addWord(){
         return;
     }
 	
-    pronunciation = autoSpacePinyin(pronunciation);
-    pronunciation = convertTone(pronunciation);
+    pronunciation = processPinyin(pronunciation);
     
     
     if(editingId !== null){
@@ -271,13 +270,11 @@ function convertTone(input) {
         // ü intentionally NOT included
     };
 
-    const match = input.match(/([1-4])$/);
-    let tone = match ? parseInt(match[1]) : 0;
-
-    let syllable = input
-        .replace(/v/g, "ü")
-        .replace(/[1-4]$/, "");
-
+        let syllable = input.replace(/v/g, "ü");
+    let toneMatch = syllable.match(/([1-4])$/);
+    let tone = toneMatch ? parseInt(toneMatch[1]) : 0;
+    syllable = syllable.replace(/[1-4]$/, "");
+    
     const priority = ["a", "o", "e", "i", "u"]; // standard rule order
 
     let targetIndex = -1;
@@ -310,17 +307,6 @@ function convertTone(input) {
     );
 }
 
-function autoSpacePinyin(input) {
-
-    input = input.replace(/([1-4])/g, "$1 "); // keep tone number separate
-
-    // split before each consonant that starts a new syllable
-    return input
-        .trim()
-        .replace(/([aeiouü][^aeiouü1-4]+)/g, "$1 ")
-        .replace(/\s+/g, " ")
-        .trim();
-}
 
 function editWord(id){
 
@@ -403,7 +389,54 @@ function closeModal(){
     document.getElementById("modal").style.display = "none";
     document.getElementById("modalText").readOnly = true;
 }
-    
+
+function tokenize(input) {
+
+    const result = [];
+    let buffer = "";
+
+    const isTone = c => /[1-4]/.test(c);
+
+    for (let i = 0; i < input.length; i++) {
+
+        const c = input[i];
+        buffer += c;
+
+        const next = input[i + 1];
+
+        // end syllable when tone number appears
+        if (isTone(c)) {
+            result.push(buffer);
+            buffer = "";
+            continue;
+        }
+
+        // split when next char starts new syllable pattern
+        if (
+            next &&
+            /[a-zü]/.test(next) &&
+            buffer.match(/[aeiouü][^aeiouü1-4]*[1-4]?$/) &&
+            buffer.match(/[1-4]$/)
+        ) {
+            result.push(buffer);
+            buffer = "";
+        }
+    }
+
+    if (buffer) result.push(buffer);
+
+    return result.filter(x => x.length > 0);
+}
+
+function processPinyin(input) {
+
+    input = input.toLowerCase().replace(/v/g, "ü");
+
+    const syllables = tokenize(input);
+
+    return syllables.map(convertTone).join(" ");
+}
+
 renderWords();
 
 </script>
