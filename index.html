@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dictionary</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+input, textarea{
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    box-sizing: border-box;
+}
+
+button{
+    padding: 10px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.word-card{
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.word-title{
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.delete-btn{
+    float:right;
+}
+</style>
+</head>
+
+<body>
+
+<h1>My Dictionary</h1>
+
+<h3>Add Entry</h3>
+
+<input id="wordInput" placeholder="Word">
+
+<textarea
+    id="meaningInput"
+    rows="4"
+    placeholder="Meaning">
+</textarea>
+
+<button onclick="addWord()">Add Word</button>
+
+<hr>
+
+<input
+    id="searchInput"
+    placeholder="Search..."
+    oninput="renderWords()">
+
+<div id="wordList"></div>
+
+<script>
+
+let dictionary =
+JSON.parse(localStorage.getItem("dictionary") || "[]");
+
+function saveDictionary(){
+    localStorage.setItem(
+        "dictionary",
+        JSON.stringify(dictionary)
+    );
+}
+
+function addWord(){
+
+    const word =
+    document.getElementById("wordInput")
+    .value.trim();
+
+    const meaning =
+    document.getElementById("meaningInput")
+    .value.trim();
+
+    if(!word || !meaning){
+        alert("Enter both word and meaning");
+        return;
+    }
+
+    dictionary.push({
+        id: Date.now(),
+        word,
+        meaning
+    });
+
+    saveDictionary();
+
+    document.getElementById("wordInput").value="";
+    document.getElementById("meaningInput").value="";
+
+    renderWords();
+}
+
+function deleteWord(id){
+
+    dictionary =
+    dictionary.filter(item => item.id !== id);
+
+    saveDictionary();
+    renderWords();
+}
+
+function renderWords(){
+
+    const search =
+    document.getElementById("searchInput")
+    .value.toLowerCase();
+
+    const container =
+    document.getElementById("wordList");
+
+    container.innerHTML = "";
+
+    const filtered =
+    dictionary.filter(item =>
+        item.word.toLowerCase().includes(search)
+    );
+
+    filtered.sort((a,b)=>
+        a.word.localeCompare(b.word)
+    );
+
+    filtered.forEach(item => {
+
+        const div =
+        document.createElement("div");
+
+        div.className = "word-card";
+
+        div.innerHTML = `
+            <button
+            class="delete-btn"
+            onclick="deleteWord(${item.id})">
+            Delete
+            </button>
+
+            <div class="word-title">
+                ${item.word}
+            </div>
+
+            <div>
+                ${item.meaning}
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+renderWords();
+
+</script>
+
+</body>
+</html>
