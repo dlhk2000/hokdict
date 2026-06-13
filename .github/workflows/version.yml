@@ -1,0 +1,27 @@
+name: Update Version File
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Generate version.json
+        run: |
+          echo "{ \"commit\": \"${GITHUB_SHA::7}\" }" > version.json
+
+      - name: Commit version file
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+          git add version.json
+          git commit -m "Update version.json" || exit 0
+          git push
