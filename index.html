@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hokkien Dictionary</title>
 
-<button onclick="openExport()">Export</button>
-<button onclick="openImport()">Import</button>
-    
+ 
 <style>
 body{
     font-family: Arial, sans-serif;
@@ -55,6 +53,21 @@ button{
     transition: opacity 0.2s ease;
 }
 
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 5px;
+    background: white;
+    border-top: 1px solid #ccc;
+}
+
 /* show on hover */
 .word-card:hover .actions {
     opacity: 1;
@@ -67,13 +80,6 @@ button{
     font-size: 16px;
 }
 
-.word-card {
-    position: relative;
-}
-
-.word-card:hover .actions {
-    opacity: 1;
-}
 
 .actions button {
     background: none;
@@ -94,7 +100,7 @@ button{
 <body>
 
 <h1>Hokkien Dictionary</h1>
-
+    
 <h3 id="formTitle">Add Entry</h3>
 
 <input id="wordInput" placeholder="Word">
@@ -129,7 +135,12 @@ background:rgba(0,0,0,0.5);">
 
   </div>
 </div>
-    
+
+<div class="bottom-bar">
+    <button onclick="openExport()">Export</button>
+    <button onclick="openImport()">Import</button>
+</div>
+  
 <script>
 
 let editingId = null;
