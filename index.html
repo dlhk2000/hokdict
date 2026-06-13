@@ -464,7 +464,7 @@ async function loadVersion() {
     const fallback = "v1 • —";
 
     try {
-        const res = await fetch("version.json");
+        const res = await fetch("version.json?v=" + Date.now());
 
         if (!res.ok) {
             document.getElementById("versionDisplay").innerText = fallback;
