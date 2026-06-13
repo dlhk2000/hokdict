@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Dictionary</title>
+<title>Hokkien Dictionary</title>
 
 <style>
 body{
@@ -46,17 +46,17 @@ button{
 
 <body>
 
-<h1>My Dictionary</h1>
+<h1>Hokkien Dictionary</h1>
 
 <h3>Add Entry</h3>
 
 <input id="wordInput" placeholder="Word">
 
-<textarea
+<input
     id="pronunciationInput"
     rows="4"
     placeholder="Pronunciation">
-</textarea>
+</input>
 
 <button onclick="addWord()">Add Word</button>
 
@@ -87,19 +87,22 @@ function addWord(){
     document.getElementById("wordInput")
     .value.trim();
 
-    const pronunciation =
+    let pronunciation =
     document.getElementById("pronunciationInput")
     .value.trim();
-
+    
     if(!word || !pronunciation){
         alert("Enter both word and pronunciation");
         return;
     }
 
+    pronunciation = convertTone(pronunciation);
+    pronunciation = autoSpacePinyin(pronunciation);
+    
     dictionary.push({
         id: Date.now(),
         word,
-        pronunciation: convertTone(pronunciation)
+        pronunciation
     });
 
     saveDictionary();
@@ -215,6 +218,19 @@ function convertTone(input) {
         syllable.slice(targetIndex + 1)
     );
 }
+
+function autoSpacePinyin(input) {
+
+    input = input.replace(/([1-4])/g, "$1 "); // keep tone number separate
+
+    // split before each consonant that starts a new syllable
+    return input
+        .trim()
+        .replace(/([aeiouü][^aeiouü1-4]+)/g, "$1 ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
     
 renderWords();
 
