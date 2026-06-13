@@ -41,6 +41,34 @@ button{
 .delete-btn{
     float:right;
 }
+
+.actions {
+    float: right;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.word-card {
+    position: relative;
+}
+
+.word-card:hover .actions {
+    opacity: 1;
+}
+
+.actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+@media (hover: none) {
+    .actions {
+        opacity: 1;
+    }
+}
 </style>
 </head>
 
@@ -165,15 +193,19 @@ function renderWords(){
         div.className = "word-card";
 
         div.innerHTML = `
-            <button onclick="editWord(${item.id})">Edit</button>
-            <button onclick="deleteWord(${item.id})">Delete</button>
+            <div class="word-content">
+                <div class="word-title">
+                    ${item.word}
+                </div>
         
-            <div class="word-title">
-                ${item.word}
+                <div>
+                    ${item.pronunciation}
+                </div>
             </div>
         
-            <div>
-                ${item.pronunciation}
+            <div class="actions">
+                <button onclick="editWord(${item.id})" title="Edit">✏️</button>
+                <button onclick="deleteWord(${item.id})" title="Delete">🗑️</button>
             </div>
         `;
         container.appendChild(div);
