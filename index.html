@@ -26,26 +26,42 @@ button{
     cursor: pointer;
 }
 
-.word-card{
+.word-card {
+    position: relative;
     border: 1px solid #ccc;
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px;
     margin-top: 10px;
 }
 
-.word-title{
-    font-weight: bold;
-    font-size: 18px;
+/* content stays normal flow */
+.word-content {
+    padding-right: 40px; /* prevents overlap with buttons */
 }
 
-.delete-btn{
-    float:right;
-}
-
+/* hidden by default */
 .actions {
-    float: right;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+
+    display: flex;
+    gap: 6px;
+
     opacity: 0;
     transition: opacity 0.2s ease;
+}
+
+/* show on hover */
+.word-card:hover .actions {
+    opacity: 1;
+}
+
+.actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
 }
 
 .word-card {
