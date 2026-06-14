@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hokkien Dictionary</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" id="fontawesome-css">
 
     <style>
         body {
@@ -36,7 +36,7 @@
             position: relative;
             border: 1px solid #ccc;
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             margin-top: 10px;
         }
 
@@ -49,8 +49,8 @@
         /* hidden by default */
         .actions {
             position: absolute;
-            bottom: 8px;
-            right: 8px;
+            bottom: 0px;
+            right: 4px;
 
             display: flex;
             gap: 6px;
@@ -92,15 +92,7 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
-        }
-
-
-        .actions button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            margin-left: 5px;
+            margin-left: 0px;
         }
 
         @media (hover: none) {
@@ -142,6 +134,8 @@
     <input id="wordInput" placeholder="Word">
 
     <input id="pronunciationInput" rows="4" placeholder="Pronunciation">
+
+    <div id="preview"></div>
 
     <button id="submitBtn" onclick="addWord()">Add Word</button>
 
@@ -248,12 +242,11 @@ background:rgba(0,0,0,0.5);">
 
             saveDictionary();
 
-            document.getElementById("wordInput").value = "";
-            document.getElementById("pronunciationInput").value = "";
-
+            resetForm();
+            
             document.getElementById("formTitle").innerText = "Add Entry";
             document.getElementById("submitBtn").innerText = "Add Word";
-
+            
             renderWords();
         }
 
@@ -320,8 +313,13 @@ background:rgba(0,0,0,0.5);">
             </div>
         
             <div class="actions">
-                <button onclick="editWord(${item.id})" title="Edit">✏️</button>
-                <button onclick="deleteWord(${item.id})" title="Delete">🗑️</button>
+                <button onclick="editWord(${item.id})" title="Edit">
+                    ${getEditIcon()}
+                </button>
+
+                <button onclick="deleteWord(${item.id})" title="Delete">
+                    ${getDeleteIcon()}
+                </button>
             </div>
         `;
                 container.appendChild(div);
@@ -375,8 +373,7 @@ background:rgba(0,0,0,0.5);">
                 syllable.slice(targetIndex + 1)
             );
         }
-
-
+        
         function editWord(id) {
 
             const item = dictionary.find(d => d.id === id);
@@ -396,7 +393,7 @@ background:rgba(0,0,0,0.5);">
             const data = dictionary.map(d => ({
                 w: d.word,
                 r: d.raw,
-                p: d.pronunciation,
+                d: d.display, // for backward compatibility
                 t: d.timestamp
             }));
 
@@ -424,11 +421,11 @@ background:rgba(0,0,0,0.5);">
 
                 dictionary = parsed.map(d => ({
                     id: Date.now() + Math.random(),
-        
+
                     word: d.w ?? "failed",
                     raw: d.r ?? "failed",
                     display: d.d ?? processPinyin(d.r ?? "failed"),
-        
+
                     timestamp: d.t ?? Date.now()
                 }));
 
@@ -442,40 +439,40 @@ background:rgba(0,0,0,0.5);">
             }
         }
 
-        function openExport(){
-        
+        function openExport() {
+
             document.getElementById("modal").style.display = "block";
             document.getElementById("modalTitle").innerText = "Export Data";
-        
+
             document.getElementById("exportOptions").style.display = "block";
-        
+
             document.getElementById("modalText").readOnly = true;
-        
+
             document.getElementById("modalAction").innerText = "Close";
             document.getElementById("modalAction").onclick = closeModal;
-            
+
             const checkbox = document.getElementById("compressToggle");
-            
+
             checkbox.onchange = updateExportBox;
-            
+
             updateExportBox();
         }
 
-        function openImport(){
+        function openImport() {
 
             document.getElementById("modal").style.display = "block";
             document.getElementById("modalTitle").innerText = "Import Data";
-        
+
             document.getElementById("exportOptions").style.display = "none";
-        
+
             document.getElementById("modalText").value = "";
             document.getElementById("modalText").placeholder =
                 "Paste exported data here...";
-        
+
             document.getElementById("modalText").readOnly = false;
-        
+
             document.getElementById("modalAction").innerText = "Import";
-            document.getElementById("modalAction").onclick = function(){
+            document.getElementById("modalAction").onclick = function() {
                 importData(document.getElementById("modalText").value);
                 closeModal();
             };
@@ -567,7 +564,7 @@ background:rgba(0,0,0,0.5);">
             const json = JSON.stringify(obj);
             return btoa(unescape(encodeURIComponent(json)));
         }
-        
+
         function decompressData(str) {
             const json = decodeURIComponent(escape(atob(str)));
             return JSON.parse(json);
@@ -578,9 +575,48 @@ background:rgba(0,0,0,0.5);">
             document.getElementById("modalText").value = text;
         }
 
+        function getEditIcon() {
+            if (fontAwesomeLoaded) {
+                return '<i class="fa-solid fa-pen-to-square"></i>';
+            }
+            return "✏️";
+        }
+
+        function getDeleteIcon() {
+            if (fontAwesomeLoaded) {
+                return '<i class="fa-solid fa-trash"></i>';
+            }
+            return "🗑️";
+        }
+
+        function resetForm() {
+            document.getElementById("wordInput").value = "";
+            document.getElementById("pronunciationInput").value = "";
+            document.getElementById("preview").innerText = "";
+        }
+        
         loadVersion();
 
-        renderWords();
+        let fontAwesomeLoaded = false;
+
+        window.addEventListener("load", () => {
+            const test = document.createElement("i");
+
+            test.className = "fa-solid fa-pen-to-square";
+            test.style.position = "absolute";
+            test.style.visibility = "hidden";
+
+            document.body.appendChild(test);
+
+            fontAwesomeLoaded =
+                getComputedStyle(test).fontFamily
+                .toLowerCase()
+                .includes("font awesome");
+
+            test.remove();
+
+            renderWords();
+        });
     </script>
 
 </body>
