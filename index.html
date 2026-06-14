@@ -130,6 +130,12 @@ button{
 
 <hr>
 
+<select id="sortMode" onchange="renderWords()">
+    <option value="az">A - Z (Locale)</option>
+    <option value="new">Newest First</option>
+    <option value="old">Oldest First</option>
+</select>
+
 <input
     id="searchInput"
     placeholder="Search..."
@@ -202,7 +208,7 @@ function addWord(){
         item.word = word;
         item.raw = raw;
         item.display = display;
-    
+        
         editingId = null;
     
     } else {
@@ -211,7 +217,8 @@ function addWord(){
             id: Date.now(),
             word,
             raw,
-            display
+            display,
+            timestamp: Date.now()
         });
     }
 
@@ -251,9 +258,24 @@ function renderWords(){
         item.word.toLowerCase().includes(search)
     );
 
-    filtered.sort((a,b)=>
-        a.word.localeCompare(b.word)
-    );
+    const sortMode = document.getElementById("sortMode").value;
+
+    filtered.sort((a, b) => {
+
+        if (sortMode === "az") {
+            return a.word.localeCompare(b.word);
+        }
+
+        if (sortMode === "new") {
+            return b.timestamp - a.timestamp;
+        }
+
+        if (sortMode === "old") {
+            return a.timestamp - b.timestamp;
+        }
+
+        return 0;
+    });
 
     filtered.forEach(item => {
 
@@ -350,7 +372,8 @@ function exportData() {
     return JSON.stringify(dictionary.map(d => ({
         w: d.word,
         r: d.raw,
-        d: d.display
+        d: d.display,
+        t: d.timestamp
     })));
 }
 
@@ -363,7 +386,8 @@ function importData(data){
             id: Date.now() + Math.random(),
             word: d.w,
             raw: d.r,
-            display: d.d
+            display: d.d,
+            timestamp: d.t || Date.now()
         }));
 
         saveDictionary();
