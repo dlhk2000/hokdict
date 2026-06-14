@@ -258,7 +258,31 @@ background:rgba(0,0,0,0.5);">
             saveDictionary();
             renderWords();
         }
-
+        
+        function parseQuery(q) {
+            return q
+                .trim()
+                .toLowerCase()
+                .split(/\s+/)
+                .filter(Boolean)
+                .map(token => {
+                    const match = token.match(/^([a-zü]+)([1-4])?$/);
+        
+                    if (!match) {
+                        return { base: token, tone: null };
+                    }
+        
+                    return {
+                        base: match[1],
+                        tone: match[2] ? parseInt(match[2]) : null
+                    };
+                });
+        }
+        
+        function getSyllables(raw) {
+            return raw.toLowerCase().split(" ");
+        }
+        
         function renderWords() {
 
             const search =
@@ -269,11 +293,41 @@ background:rgba(0,0,0,0.5);">
                 document.getElementById("wordList");
 
             container.innerHTML = "";
+            
+            //searching
+            const q = document.getElementById("searchInput").value;
 
-            const filtered =
-                dictionary.filter(item =>
-                    item.word.toLowerCase().includes(search)
-                );
+            const tokens = parseQuery(q);
+            
+            const filtered = dictionary.filter(item => {
+                const word = item.word.toLowerCase();
+                const syllables = getSyllables(item.raw);
+            
+                
+                if (word.includes(q.toLowerCase())) return true;
+            
+                // token-based matching
+                return tokens.every(tok => {
+                    return syllables.some(syl => {
+                        // extract base + tone from syllable
+                        const m = syl.match(/^([a-zü]+)([1-4])?$/);
+                        if (!m) return false;
+            
+                        const base = m[1];
+                        const tone = m[2] ? parseInt(m[2]) : null;
+            
+                        // base must match
+                        if (!base.startsWith(tok.base)) return false;
+            
+                        // tone rule:
+                        // - if user didn't specify tone → accept any
+                        // - if user specified tone → must match exactly
+                        if (tok.tone !== null && tok.tone !== tone) return false;
+            
+                        return true;
+                    });
+                });
+            });
 
             const sortMode = document.getElementById("sortMode").value;
 
