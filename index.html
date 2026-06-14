@@ -1,290 +1,314 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hokkien Dictionary</title>
-
- 
-<style>
-body{
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    padding-bottom: 60px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hokkien Dictionary</title>
 
 
-
-input, textarea{
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-    box-sizing: border-box;
-}
-
-button{
-    padding: 10px;
-    margin-top: 5px;
-    cursor: pointer;
-}
-
-.word-card {
-    position: relative;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 12px;
-    margin-top: 10px;
-}
-
-/* content stays normal flow */
-.word-content {
-    padding-right: 40px; /* prevents overlap with buttons */
-}
-
-/* hidden by default */
-.actions {
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-
-    display: flex;
-    gap: 6px;
-
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-
-    padding: 5px;
-    background: white;
-    border-top: 1px solid #ccc;
-}
-
-/* show on hover */
-.word-card:hover .actions {
-    opacity: 1;
-}
-
-.actions button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            padding-bottom: 60px;
+        }
 
 
-.actions button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-left: 5px;
-}
 
-@media (hover: none) {
-    .actions {
-        opacity: 1;
-    }
-}
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
 
-#versionDisplay {
-    position: fixed;
-    bottom: 5px;
-    right: 8px;
+        button {
+            padding: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
 
-    font-size: 11px;
-    color: #aaa;
+        .word-card {
+            position: relative;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
 
-    opacity: 0.6;
-    pointer-events: none;
-}
-</style>
+        /* content stays normal flow */
+        .word-content {
+            padding-right: 40px;
+            /* prevents overlap with buttons */
+        }
+
+        /* hidden by default */
+        .actions {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+
+            display: flex;
+            gap: 6px;
+
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+
+            padding: 5px;
+            background: white;
+            border-top: 1px solid #ccc;
+        }
+
+        .compress-option {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            width: 100%;
+        }
+
+        /* show on hover */
+        .word-card:hover .actions {
+            opacity: 1;
+        }
+
+        .actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+
+        .actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 5px;
+        }
+
+        @media (hover: none) {
+            .actions {
+                opacity: 1;
+            }
+        }
+
+        #versionDisplay {
+            position: fixed;
+            bottom: 5px;
+            right: 8px;
+
+            font-size: 11px;
+            color: #aaa;
+
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            flex: 0 0 auto;
+        }
+
+        #modalText {
+            resize: none;
+        }
+    </style>
 </head>
 
 <body>
 
-<h1>Hokkien Dictionary</h1>
-    
-<h3 id="formTitle">Add Entry</h3>
+    <h1>Hokkien Dictionary</h1>
 
-<input id="wordInput" placeholder="Word">
+    <h3 id="formTitle">Add Entry</h3>
 
-<input
-    id="pronunciationInput"
-    rows="4"
-    placeholder="Pronunciation">
-</input>
+    <input id="wordInput" placeholder="Word">
 
-<button id="submitBtn" onclick="addWord()">Add Word</button>
+    <input id="pronunciationInput" rows="4" placeholder="Pronunciation">
 
-<hr>
+    <button id="submitBtn" onclick="addWord()">Add Word</button>
 
-<select id="sortMode" onchange="renderWords()">
-    <option value="az">A - Z (Locale)</option>
-    <option value="new">Newest First</option>
-    <option value="old">Oldest First</option>
-</select>
+    <hr>
 
-<input
-    id="searchInput"
-    placeholder="Search..."
-    oninput="renderWords()">
+    <select id="sortMode" onchange="renderWords()">
+        <option value="az">A - Z (Locale)</option>
+        <option value="new">Newest First</option>
+        <option value="old">Oldest First</option>
+    </select>
 
-<div id="wordList"></div>
+    <input id="searchInput" placeholder="Search..." oninput="renderWords()">
 
-<div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    <div id="wordList"></div>
+
+    <div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
 background:rgba(0,0,0,0.5);">
 
-  <div style="background:white; width:80%; max-width:600px; margin:100px auto; padding:15px; position:relative;">
+        <div style="background:white; width:80%; max-width:600px; margin:100px auto; padding:15px; position:relative;">
 
-    <h3 id="modalTitle"></h3>
+            <h3 id="modalTitle"></h3>
 
-    <textarea id="modalText" style="width:100%; height:300px;" readonly></textarea>
+            <div id="exportOptions">
+                <div class="compress-option">
+                    <input type="checkbox" id="compressToggle">
+                    <span>Compress export</span>
+                </div>
+            </div>
 
-    <button id="modalAction" style="margin-top:10px;"></button>
+            <textarea id="modalText" style="width:100%; height:300px;" readonly></textarea>
 
-  </div>
-</div>
+            <button id="modalAction" style="margin-top:10px;"></button>
 
-<div class="bottom-bar">
-    <button onclick="openExport()">Export</button>
-    <button onclick="openImport()">Import</button>
-    
-    <div id="versionDisplay"></div>
-</div>
+        </div>
+    </div>
 
-  
-<script>
+    <div class="bottom-bar">
+        <button onclick="openExport()">Export</button>
+        <button onclick="openImport()">Import</button>
 
-let editingId = null;
-    
-let dictionary =
-JSON.parse(localStorage.getItem("dictionary") || "[]");
-let a = "asd";
+        <div id="versionDisplay"></div>
+    </div>
 
-function saveDictionary(){
-    localStorage.setItem(
-        "dictionary",
-        JSON.stringify(dictionary)
-    );
-}
 
-function addWord(){
+    <script>
+        let editingId = null;
 
-    const word =
-    document.getElementById("wordInput")
-    .value.trim();
+        let dictionary =
+            JSON.parse(localStorage.getItem("dictionary") || "[]");
 
-    let pronunciation =
-    document.getElementById("pronunciationInput")
-    .value.trim();
-    
-    if(!word || !pronunciation){
-        alert("Enter both word and pronunciation");
-        return;
-    }
-	
-    pronunciation = processPinyin(pronunciation);
-    
-    
-    const raw = document.getElementById("pronunciationInput").value.trim();
-
-    const display = processPinyin(raw);
-    
-    if (editingId !== null) {
-    
-        const item = dictionary.find(d => d.id === editingId);
-        item.word = word;
-        item.raw = raw;
-        item.display = display;
-        
-        editingId = null;
-    
-    } else {
-    
-        dictionary.push({
-            id: Date.now(),
-            word,
-            raw,
-            display,
-            timestamp: Date.now()
+        document.getElementById("pronunciationInput").addEventListener("input", function() {
+            const raw = this.value.trim();
+            document.getElementById("preview").innerText = processPinyin(raw);
         });
-    }
 
-    saveDictionary();
-
-    document.getElementById("wordInput").value="";
-    document.getElementById("pronunciationInput").value="";
-
-    document.getElementById("formTitle").innerText = "Add Entry";
-    document.getElementById("submitBtn").innerText = "Add Word";
-
-    renderWords();
-}
-
-function deleteWord(id){
-
-    dictionary =
-    dictionary.filter(item => item.id !== id);
-
-    saveDictionary();
-    renderWords();
-}
-
-function renderWords(){
-
-    const search =
-    document.getElementById("searchInput")
-    .value.toLowerCase();
-
-    const container =
-    document.getElementById("wordList");
-
-    container.innerHTML = "";
-
-    const filtered =
-    dictionary.filter(item =>
-        item.word.toLowerCase().includes(search)
-    );
-
-    const sortMode = document.getElementById("sortMode").value;
-
-    filtered.sort((a, b) => {
-
-        if (sortMode === "az") {
-            return a.word.localeCompare(b.word);
+        function saveDictionary() {
+            localStorage.setItem(
+                "dictionary",
+                JSON.stringify(dictionary)
+            );
         }
 
-        if (sortMode === "new") {
-            return b.timestamp - a.timestamp;
+        function addWord() {
+
+            const word =
+                document.getElementById("wordInput")
+                .value.trim();
+
+            let pronunciation =
+                document.getElementById("pronunciationInput")
+                .value.trim();
+
+            if (!word || !pronunciation) {
+                alert("Enter both word and pronunciation");
+                return;
+            }
+
+            pronunciation = processPinyin(pronunciation);
+
+
+            const raw = document.getElementById("pronunciationInput").value.trim();
+
+            const display = processPinyin(raw);
+
+            if (editingId !== null) {
+
+                const item = dictionary.find(d => d.id === editingId);
+                item.word = word;
+                item.raw = raw;
+                item.display = display;
+
+                editingId = null;
+
+            } else {
+
+                dictionary.push({
+                    id: Date.now(),
+                    word,
+                    raw,
+                    display,
+                    timestamp: Date.now()
+                });
+            }
+
+            saveDictionary();
+
+            document.getElementById("wordInput").value = "";
+            document.getElementById("pronunciationInput").value = "";
+
+            document.getElementById("formTitle").innerText = "Add Entry";
+            document.getElementById("submitBtn").innerText = "Add Word";
+
+            renderWords();
         }
 
-        if (sortMode === "old") {
-            return a.timestamp - b.timestamp;
+        function deleteWord(id) {
+
+            dictionary =
+                dictionary.filter(item => item.id !== id);
+
+            saveDictionary();
+            renderWords();
         }
 
-        return 0;
-    });
+        function renderWords() {
 
-    filtered.forEach(item => {
+            const search =
+                document.getElementById("searchInput")
+                .value.toLowerCase();
 
-        const div =
-        document.createElement("div");
+            const container =
+                document.getElementById("wordList");
 
-        div.className = "word-card";
+            container.innerHTML = "";
 
-        div.innerHTML = `
+            const filtered =
+                dictionary.filter(item =>
+                    item.word.toLowerCase().includes(search)
+                );
+
+            const sortMode = document.getElementById("sortMode").value;
+
+            filtered.sort((a, b) => {
+
+                if (sortMode === "az") {
+                    return a.word.localeCompare(b.word);
+                }
+
+                if (sortMode === "new") {
+                    return b.timestamp - a.timestamp;
+                }
+
+                if (sortMode === "old") {
+                    return a.timestamp - b.timestamp;
+                }
+
+                return 0;
+            });
+
+            filtered.forEach(item => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "word-card";
+
+                div.innerHTML = `
             <div class="word-content">
                 <div class="word-title">
                     ${item.word}
@@ -300,231 +324,265 @@ function renderWords(){
                 <button onclick="deleteWord(${item.id})" title="Delete">🗑️</button>
             </div>
         `;
-        container.appendChild(div);
-    });
-}
-
-function convertTone(input) {
-
-    const toneMap = {
-        a: ["a", "ā", "á", "ǎ", "à"],
-        o: ["o", "ō", "ó", "ǒ", "ò"],
-        e: ["e", "ē", "é", "ě", "è"],
-        i: ["i", "ī", "í", "ǐ", "ì"],
-        u: ["u", "ū", "ú", "ǔ", "ù"]
-        // ü intentionally NOT included
-    };
-
-        let syllable = input.replace(/v/g, "ü");
-    let toneMatch = syllable.match(/([1-4])$/);
-    let tone = toneMatch ? parseInt(toneMatch[1]) : 0;
-    syllable = syllable.replace(/[1-4]$/, "");
-    
-    const priority = ["a", "o", "e", "i", "u"]; // standard rule order
-
-    let targetIndex = -1;
-    let targetVowel = null;
-
-    for (let v of priority) {
-        let index = syllable.indexOf(v);
-        if (index !== -1) {
-            targetIndex = index;
-            targetVowel = v;
-            break;
+                container.appendChild(div);
+            });
         }
-    }
 
-    // fallback: if no main vowel found
-    if (targetIndex === -1) {
-        return syllable;
-    }
+        function convertTone(input) {
 
-    // apply tone
-    const tonedChar =
-        tone > 0 && toneMap[targetVowel]
-            ? toneMap[targetVowel][tone]
-            : targetVowel;
+            const toneMap = {
+                a: ["a", "ā", "á", "ǎ", "à"],
+                o: ["o", "ō", "ó", "ǒ", "ò"],
+                e: ["e", "ē", "é", "ě", "è"],
+                i: ["i", "ī", "í", "ǐ", "ì"],
+                u: ["u", "ū", "ú", "ǔ", "ù"]
+                // ü intentionally NOT included
+            };
 
-    return (
-        syllable.slice(0, targetIndex) +
-        tonedChar +
-        syllable.slice(targetIndex + 1)
-    );
-}
+            let syllable = input.replace(/v/g, "ü");
+            let toneMatch = syllable.match(/([1-4])$/);
+            let tone = toneMatch ? parseInt(toneMatch[1]) : 0;
+            syllable = syllable.replace(/[1-4]$/, "");
+
+            const priority = ["a", "o", "e", "i", "u"]; // standard rule order
+
+            let targetIndex = -1;
+            let targetVowel = null;
+
+            for (let v of priority) {
+                let index = syllable.indexOf(v);
+                if (index !== -1) {
+                    targetIndex = index;
+                    targetVowel = v;
+                    break;
+                }
+            }
+
+            // fallback: if no main vowel found
+            if (targetIndex === -1) {
+                return syllable;
+            }
+
+            // apply tone
+            const tonedChar =
+                tone > 0 && toneMap[targetVowel] ?
+                toneMap[targetVowel][tone] :
+                targetVowel;
+
+            return (
+                syllable.slice(0, targetIndex) +
+                tonedChar +
+                syllable.slice(targetIndex + 1)
+            );
+        }
 
 
-function editWord(id){
+        function editWord(id) {
 
-    const item = dictionary.find(d => d.id === id);
+            const item = dictionary.find(d => d.id === id);
 
-    document.getElementById("wordInput").value = item.word;
-    document.getElementById("pronunciationInput").value = item.raw;
+            document.getElementById("wordInput").value = item.word;
+            document.getElementById("pronunciationInput").value = item.raw;
 
-    editingId = id;
+            editingId = id;
 
-    // UI changes
-    document.getElementById("formTitle").innerText = "Editing";
-    document.getElementById("submitBtn").innerText = "Change Word";
-}
+            // UI changes
+            document.getElementById("formTitle").innerText = "Editing";
+            document.getElementById("submitBtn").innerText = "Change Word";
+        }
 
-function exportData() {
-    
-    return JSON.stringify(dictionary.map(d => ({
-        w: d.word,
-        r: d.raw,
-        d: d.display,
-        t: d.timestamp
-    })));
-}
+        function exportData() {
 
-function importData(data){
+            const data = dictionary.map(d => ({
+                w: d.word,
+                r: d.raw,
+                p: d.pronunciation,
+                t: d.timestamp
+            }));
 
-    try {
-        const parsed = JSON.parse(data);
+            const compress = document.getElementById("compressToggle").checked;
 
-        dictionary = parsed.map(d => ({
-            id: Date.now() + Math.random(),
-            word: d.w,
-            raw: d.r,
-            display: d.d,
-            timestamp: d.t || Date.now()
-        }));
+            if (compress) {
+                return compressData(data);
+            }
 
-        saveDictionary();
+            return JSON.stringify(data);
+        }
+
+        function importData(input) {
+
+            try {
+                let parsed;
+
+                // Try JSON first
+                try {
+                    parsed = JSON.parse(input);
+                } catch (e) {
+                    // Not JSON → try decompression
+                    parsed = decompressData(input);
+                }
+
+                dictionary = parsed.map(d => ({
+                    id: Date.now() + Math.random(),
+        
+                    word: d.w ?? "failed",
+                    raw: d.r ?? "failed",
+                    display: d.d ?? processPinyin(d.r ?? "failed"),
+        
+                    timestamp: d.t ?? Date.now()
+                }));
+
+                saveDictionary();
+                renderWords();
+
+                alert("Import successful");
+
+            } catch (e) {
+                alert("Invalid data format");
+            }
+        }
+
+        function openExport(){
+        
+            document.getElementById("modal").style.display = "block";
+            document.getElementById("modalTitle").innerText = "Export Data";
+        
+            document.getElementById("exportOptions").style.display = "block";
+        
+            document.getElementById("modalText").readOnly = true;
+        
+            document.getElementById("modalAction").innerText = "Close";
+            document.getElementById("modalAction").onclick = closeModal;
+            
+            const checkbox = document.getElementById("compressToggle");
+            
+            checkbox.onchange = updateExportBox;
+            
+            updateExportBox();
+        }
+
+        function openImport(){
+
+            document.getElementById("modal").style.display = "block";
+            document.getElementById("modalTitle").innerText = "Import Data";
+        
+            document.getElementById("exportOptions").style.display = "none";
+        
+            document.getElementById("modalText").value = "";
+            document.getElementById("modalText").placeholder =
+                "Paste exported data here...";
+        
+            document.getElementById("modalText").readOnly = false;
+        
+            document.getElementById("modalAction").innerText = "Import";
+            document.getElementById("modalAction").onclick = function(){
+                importData(document.getElementById("modalText").value);
+                closeModal();
+            };
+        }
+
+        function closeModal() {
+
+            document.getElementById("modal").style.display = "none";
+            document.getElementById("modalText").readOnly = true;
+        }
+
+        function tokenize(input) {
+
+            const result = [];
+            let buffer = "";
+
+            const isTone = c => /[1-4]/.test(c);
+
+            for (let i = 0; i < input.length; i++) {
+
+                const c = input[i];
+                buffer += c;
+
+                const next = input[i + 1];
+
+                // end syllable when tone number appears
+                if (isTone(c)) {
+                    result.push(buffer);
+                    buffer = "";
+                    continue;
+                }
+
+                // split when next char starts new syllable pattern
+                if (
+                    next &&
+                    /[a-zü]/.test(next) &&
+                    buffer.match(/[aeiouü][^aeiouü1-4]*[1-4]?$/) &&
+                    buffer.match(/[1-4]$/)
+                ) {
+                    result.push(buffer);
+                    buffer = "";
+                }
+            }
+
+            if (buffer) result.push(buffer);
+
+            return result.filter(x => x.length > 0);
+        }
+
+        function processPinyin(input) {
+
+            input = input.toLowerCase().replace(/v/g, "ü");
+
+            const syllables = tokenize(input);
+
+            return syllables.map(convertTone).join(" ");
+        }
+
+        async function loadVersion() {
+
+            const fallback = "v1 • —";
+
+            try {
+                const res = await fetch("version.json?v=" + Date.now());
+
+                if (!res.ok) {
+                    document.getElementById("versionDisplay").innerText = fallback;
+                    return;
+                }
+
+                const data = await res.json();
+
+                const commit = data?.commit;
+
+                if (!commit || typeof commit !== "string") {
+                    document.getElementById("versionDisplay").innerText = fallback;
+                    return;
+                }
+
+                document.getElementById("versionDisplay").innerText =
+                    "v1 • " + commit;
+
+            } catch (e) {
+                document.getElementById("versionDisplay").innerText = fallback;
+            }
+        }
+
+        function compressData(obj) {
+            const json = JSON.stringify(obj);
+            return btoa(unescape(encodeURIComponent(json)));
+        }
+        
+        function decompressData(str) {
+            const json = decodeURIComponent(escape(atob(str)));
+            return JSON.parse(json);
+        }
+
+        function updateExportBox() {
+            const text = exportData();
+            document.getElementById("modalText").value = text;
+        }
+
+        loadVersion();
+
         renderWords();
-
-        alert("Import successful");
-
-    } catch (e) {
-        alert("Invalid import data");
-    }
-}
-
-function openExport(){
-
-    document.getElementById("modal").style.display = "block";
-    document.getElementById("modalTitle").innerText = "Export Data";
-
-    document.getElementById("modalText").value = exportData();
-
-    document.getElementById("modalAction").innerText = "Close";
-    document.getElementById("modalAction").onclick = closeModal;
-}
-
-function openImport(){
-
-    document.getElementById("modal").style.display = "block";
-    document.getElementById("modalTitle").innerText = "Import Data";
-
-    document.getElementById("modalText").value = "";
-    document.getElementById("modalText").placeholder =
-        "Paste exported data here...";
-
-    document.getElementById("modalText").readOnly = false;
-
-    document.getElementById("modalAction").innerText = "Import";
-    document.getElementById("modalAction").onclick = function(){
-
-        importData(document.getElementById("modalText").value);
-
-        closeModal();
-    };
-}
-
-function closeModal(){
-
-    document.getElementById("modal").style.display = "none";
-    document.getElementById("modalText").readOnly = true;
-}
-
-function tokenize(input) {
-
-    const result = [];
-    let buffer = "";
-
-    const isTone = c => /[1-4]/.test(c);
-
-    for (let i = 0; i < input.length; i++) {
-
-        const c = input[i];
-        buffer += c;
-
-        const next = input[i + 1];
-
-        // end syllable when tone number appears
-        if (isTone(c)) {
-            result.push(buffer);
-            buffer = "";
-            continue;
-        }
-
-        // split when next char starts new syllable pattern
-        if (
-            next &&
-            /[a-zü]/.test(next) &&
-            buffer.match(/[aeiouü][^aeiouü1-4]*[1-4]?$/) &&
-            buffer.match(/[1-4]$/)
-        ) {
-            result.push(buffer);
-            buffer = "";
-        }
-    }
-
-    if (buffer) result.push(buffer);
-
-    return result.filter(x => x.length > 0);
-}
-
-function processPinyin(input) {
-
-    input = input.toLowerCase().replace(/v/g, "ü");
-
-    const syllables = tokenize(input);
-
-    return syllables.map(convertTone).join(" ");
-}
-
-async function loadVersion() {
-
-    const fallback = "v1 • —";
-
-    try {
-        const res = await fetch("version.json?v=" + Date.now());
-
-        if (!res.ok) {
-            document.getElementById("versionDisplay").innerText = fallback;
-            return;
-        }
-
-        const data = await res.json();
-
-        const commit = data?.commit;
-
-        if (!commit || typeof commit !== "string") {
-            document.getElementById("versionDisplay").innerText = fallback;
-            return;
-        }
-
-        document.getElementById("versionDisplay").innerText =
-            "v1 • " + commit;
-
-    } catch (e) {
-        document.getElementById("versionDisplay").innerText = fallback;
-    }
-}
-
-document.getElementById("pronunciationInput").addEventListener("input", function () {
-    const raw = this.value.trim();
-    document.getElementById("preview").innerText = processPinyin(raw);
-});
-
-loadVersion();
-
-loadVersion();
-
-renderWords();
-
-</script>
+    </script>
 
 </body>
+
 </html>
